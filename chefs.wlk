@@ -1,84 +1,98 @@
 import recetas.*
 
-object paulina{
-  var puntos = 0
-  const recetas = [ensalada,risotto]
+object paulina {
+  const recetasConocidas = [ensalada, risotto]
+  var puntuacion = 0
 
-  method puntos() = puntos
+  method recetasConocidas() = recetasConocidas
+  method puedeCocinar(receta) = self.conoceReceta(receta)
+  method puntuacion() = puntuacion
+  method conoceReceta(receta) = recetasConocidas.contains(receta)
 
-  method puedeCocinar(unaReceta) = self.conoceReceta(unaReceta)
+  method otorgarPuntuacionPor(receta) {
+    if (receta.esAptoVegetariano()) {
+      puntuacion += receta.puntuacion() * 2
+    }
 
-  method cocinar(unaReceta){
-    if(self.puedeCocinar(unaReceta))
-      puntos = puntos + self.bonus(unaReceta)
-  }
-
-  method bonus(unaReceta){
-    if(unaReceta.esVegetariana()){
-      return unaReceta.puntosOtorgados()*2 
-    }else{
-      return unaReceta.puntosOtorgados()/2
+    else {
+      puntuacion += receta.puntuacion() / 2
     }
   }
 
-  method aprender(unaReceta){
-    if(unaReceta.esVegetariana() && !self.conoceReceta(unaReceta)) recetas.add(unaReceta)
+  method aprender(receta) {
+    if (receta.esAptoVegetariano()) {
+      recetasConocidas.add(receta)
+    }
   }
 
-  method conoceReceta(unaReceta) = recetas.contains(unaReceta)
+  method cocinar(receta) {
+    if (self.puedeCocinar(receta)) {
+      self.otorgarPuntuacionPor(receta)
+    }
+  }
 }
 
-object remy{
-  var puntos = 0
-  var estaRatatouille = true
-  const recetas = [risotto,paella]
+object remy {
+  const recetasConocidas = [risotto, paella]
+  var puntuacion = 0
+  var ratatouilleEstaDisponible = true
 
-  method puntos() = puntos
+  method recetasConocidas() = recetasConocidas
+  method puedeCocinar(receta) = recetasConocidas.size() >= 2 and self.conoceReceta(receta)
+  method puntuacion() = puntuacion
+  method conoceReceta(receta) = recetasConocidas.contains(receta)
 
-  method puedeCocinar(unaReceta) = recetas.size() >= 2 && self.conoceReceta(unaReceta)
+  method otorgarPuntuacionPor(receta) {
+    if (ratatouilleEstaDisponible) {
+      puntuacion += receta.puntuacion() + 5
+    }
 
-  method cocinar(unaReceta){
-    if(self.puedeCocinar(unaReceta)){
-      puntos += unaReceta.puntosOtorgados() + self.bonus()
+    else {
+      puntuacion += receta.puntuacion()
     }
   }
 
-  method bonus() = if(estaRatatouille) 5 else 0
-
-  method llegoLaRata(){estaRatatouille = true}
-  method seFueLaRata(){estaRatatouille = false}
-
-  method aprender(unaReceta){
-    if(!recetas.contains(unaReceta))
-      recetas.add(unaReceta)
+  method aprender(receta) {
+    recetasConocidas.add(receta)
   }
 
-  method conoceReceta(unaReceta) = recetas.contains(unaReceta)
+  method cocinar(receta) {
+    if (self.puedeCocinar(receta)) {
+      self.otorgarPuntuacionPor(receta)
+    }
+  }
+
+  method ratatouilleNoEstaDisponible() {
+    ratatouilleEstaDisponible = false
+  }
+
+  method ratatouilleSiEstaDisponible() {
+    ratatouilleEstaDisponible = true
+  }
 }
 
-object christof{
-  var puntos = 0
-  var receta = paella
-  var ayudantes = 2
+object christof {
+  var recetaConocida = paella
+  var puntuacion = 0
+  var cantAyudantes = 2
 
-  method puntos() = puntos
-  method receta() = receta
+  method recetasConocidas() = recetaConocida
+  method puedeCocinar(receta) = cantAyudantes.even() and puntuacion <= 200 and self.conoceReceta(receta) 
+  method puntuacion() = puntuacion
+  method conoceReceta(receta) = recetaConocida == receta
 
-  method puedeCocinar(unaReceta) = ayudantes.even() && puntos < 200 && self.conoceReceta(unaReceta)
+  method otorgarPuntuacionPor(receta) {
+    puntuacion += receta.puntuacion() + 2 * cantAyudantes
+  }
 
-  method cocinar(unaReceta){
-    if(self.puedeCocinar(unaReceta)){
-      puntos += unaReceta.puntosOtorgados() + self.bonus()
+  method aprender(receta) {
+    recetaConocida = receta
+    cantAyudantes += 1
+  }
+
+  method cocinar(receta) {
+    if (self.puedeCocinar(receta)) {
+      self.otorgarPuntuacionPor(receta)
     }
   }
-
-  method bonus() = ayudantes * 2
-
-  method aprender(unaReceta){
-    if(!self.conoceReceta(unaReceta))
-      receta = unaReceta
-      ayudantes += 1
-  }
-
-  method conoceReceta(unaReceta) = unaReceta == receta
 }

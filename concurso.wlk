@@ -1,32 +1,27 @@
 import recetas.*
 import chefs.*
-
-object concurso{
-  const chefs = [paulina, remy, christof]
+object concurso {
+  const concursantes = [paulina, remy, christof]
   const recetas = [paella, risotto, ensalada]
 
-  method prepararConcurso(){
+  method ganador() = concursantes.max({c => c.puntuacion()})
+  method hayChefExperto() = concursantes.any({c => c.puntuacion() > 450})
+  method recetasVegetarianas() = recetas.filter({r => r.esAptoVegetariano()})
+  method recetaVegetarianaConMasPuntos() = self.recetasVegetarianas().max({r => r.puntuacion()})
+  method cantChefsQuePuedenCocinar(receta) = concursantes.count({c => c.puedeCocinar(receta)})
+  method listaPuntosOtorgados() = recetas.map({r => r.puntuacion()})
+
+  method prepararConcurso() {
+    risotto.cambiarIngredientePrincipal(hongo)
     paella.quitarMariscos()
-    risotto.cambiarIngrediente(hongos)
-    estacionDelAño.terminoPrimavera()
+    hongo.terminarPrimavera()
   }
 
-  method todosAprendenReceta(unaReceta){
-    chefs.forEach({ c => c.aprender(unaReceta)})
+  method concursantesAprendenReceta(receta) {
+    concursantes.forEach({c => c.aprender(receta)})
   }
 
-  method todosCocinanReceta(unaReceta){
-    chefs.forEach({c => c.cocinar(unaReceta)})
+  method concursantesCocinanReceta(receta) {
+    concursantes.forEach({c => c.cocinar(receta)})
   }
-
-  method ganadorDelConcurso() = chefs.max({ c => c.puntos()})
-
-  method chefExperto() = chefs.any({c => c.puntos() > 450})
-
-  method recetasVegetarianas() = recetas.filter({r => r.esVegetariana()})
-  method recetaVegetarianaDeMasPuntos() = self.recetasVegetarianas().max({r => r.puntosOtorgados()})
-
-  method cantChefsQuePuedenCocinar(unaReceta) = chefs.count({c => c.puedeCocinar(unaReceta)})
-
-  method listaDePuntosDeReceta() = recetas.map({r => r.puntosOtorgados()})
 }

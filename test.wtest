@@ -2,56 +2,60 @@ import recetas.*
 import chefs.*
 import concurso.*
 
-describe "masterWollok"{
+describe "grupo de test necesarios" {
+  test "La Paella con mariscos otorga 8 puntos" {
+    paella.ponerMariscos()
 
-  test "la paella otorga 8 puntos cuando tiene mariscos"{
-    paella.agregarMariscos()
-    assert.equals(8, paella.puntosOtorgados())
+    assert.equals(8, paella.puntuacion())
   }
 
-  test "El risotto de hongos otorga 16 puntos en primavera"{
-    estacionDelAño.llegoPrimavera()
-    risotto.cambiarIngrediente(hongos)
-    assert.equals(16,risotto.puntosOtorgados())
+  test "El risotto de hongos otorga 16 puntos en primavera" {
+    risotto.cambiarIngredientePrincipal(hongo)
+    hongo.empezarPrimavera()
+
+    assert.equals(16, risotto.puntuacion())
   }
 
-  test " Paulina obtiene 20 puntos luego de cocinar Ensalada."{
+  test "Paulina obtiene 20 puntos al cocinar Ensalada" {
     paulina.cocinar(ensalada)
-    assert.equals(20, paulina.puntos())
+
+    assert.equals(20, paulina.puntuacion())
   }
 
-  test " Remy obtiene 21 puntos al cocinar Risotto de hongos con Ratatouille."{
-    remy.llegoLaRata()
-    risotto.cambiarIngrediente(hongos)
-    remy.aprender(risotto)
+  test "Remy obtiene 21 puntos al cocinar risotto de hongos con ratatouille cuando es primavera" {
+    risotto.cambiarIngredientePrincipal(hongo)
+    hongo.empezarPrimavera()
     remy.cocinar(risotto)
-    assert.equals(21,remy.puntos())
+
+    assert.equals(21, remy.puntuacion())
   }
 
-  test "Christof después de aprender Ensalada no puede cocinarla"{
+  test "Christof aprende a hacer ensalada, pero no puede cocinarla" {
     christof.aprender(ensalada)
+
     assert.notThat(christof.puedeCocinar(ensalada))
   }
 
-  test "Cuando Christof aprende Ensalada, olvida su receta anterior"{
-    christof.aprender(paella)
+  test "Christof aprende risotto y luego ensalada. Christof olvida risotto" {
+    christof.aprender(risotto)
     christof.aprender(ensalada)
-    assert.notThat(christof.conoceReceta(paella))
+
+    assert.notEquals(risotto, christof.recetasConocidas())
   }
 
-  test " El concurso cuenta correctamente que hay 2 chefs que pueden cocinar Risotto"{
+  test "Al inicio, hay dos concursantes que pueden cocinar risotto" {
     assert.equals(2, concurso.cantChefsQuePuedenCocinar(risotto))
   }
 
-  test " La receta vegetariana con más puntos es el Risotto de hongos."{
-    risotto.cambiarIngrediente(hongos)
-    assert.equals(risotto,concurso.recetaVegetarianaDeMasPuntos())
+  test "La receta vegetariana con más puntos es el risotto de hongos" {
+    assert.equals(risotto, concurso.recetaVegetarianaConMasPuntos())
   }
 
-  test " Luego de preparar el concurso, que todos aprendan la paella y todos cocinen la paella, la ganadora del concurso es Paulina."{
+  test "Preparar concurso, todos aprenden y cocinen paella. La ganadora es Paulina" {
     concurso.prepararConcurso()
-    concurso.todosAprendenReceta(paella)
-    concurso.todosCocinanReceta(paella)
-    assert.equals(paulina, concurso.ganadorDelConcurso())
+    concurso.concursantesAprendenReceta(paella)
+    concurso.concursantesCocinanReceta(paella)
+
+    assert.equals(paulina, concurso.ganador())
   }
 }
